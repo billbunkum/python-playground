@@ -2,6 +2,10 @@ from pathlib import Path
 import shutil
 import os
 
+# COMPARES THE FILES WITHIN TWO DIRECTORIES WHICH SHOULD BE THE SAME BUT AREN'T
+    # ASSUMES first_directory IS LARGER
+    # OUTPUTS A results.txt FILE LIST OF THE FILES MISSING FROM second_directory
+
 def main():
     print("yo")
     
@@ -127,7 +131,9 @@ def copyFiles(unique_names, first_contents, first_directory, destination_dir):
                     # COPY FROM source TO destination dir
                 shutil.copy2(source_file_path, destination_file_path)
 
-
+#
+#
+#
 # START THE PROGRAM
 if __name__ == "__main__":
     main()
@@ -135,6 +141,5 @@ if __name__ == "__main__":
 
 
 
-
-
+# Coded by Bill Bunkum 
 # END OF FILE
