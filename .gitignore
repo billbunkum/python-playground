@@ -1,4 +1,6 @@
 # FOLDERS
+/test-dir
 
 # FILES
 *.txt
+*.swp
