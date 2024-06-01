@@ -11,25 +11,18 @@ def main():
 
     # PROMPT USER FOR DIRECTORY
     try:
-        userInput = input(r'Type the directory path: ')
+        userInput = r'C:\Users\Will\Development\python-playground\combine-text-files\test-dir'
+        #userInput = input(r'Type the directory path: ')
+        #userInput = input('Type the directory path: ')
+        #userInput = userInput.replace('\\', '\\\\')
         testDir = Path(userInput)
         
     except:
         print('path went wrong')
 
-    #try:
+    # GRAB CONTENTS FROM EACH FILE
     for item in testDir.iterdir():
-        # GRAB DATA FROM EACH FILE
-        grab_name(item.name)
-
-        # GRAB CONTENTS FROM EACH FILE
-        newContents = grab_contents(item)
-
-        # PARSE CONTENTS AND WRITE INTO combined_data.txt
-        write_contents(newContents)
-
-    #except:
-     #   print('ERROR: readin went wrong')
+        grab_contents(item)
 
 # CREATES NEW FILE combined-data.csv 
 def grab_name(file_name):
@@ -43,51 +36,65 @@ def grab_name(file_name):
 
 # OPENS EACH FILE TO GET CONTENTS - file name, label no., AND conf
 def grab_contents(item):
-    try:
-        with open(item, 'r') as file:
-            contents = file.read()
-            newContents = contents.rsplit(' ', -1)
 
-#        print(newContents)
+    with open(item, 'r') as file:
+        contents = file.read()
+        contentsLines = [line.strip() for line in contents.splitlines()] # STRIP \n AND CREATE LIST contentsLines
+        package = []
+ 
+        if contentsLines:
+            if len(contentsLines) != 1: # IF MORE THAN ONE BOUNDING BOX IN FILE
+               for line in contentsLines:
+                   package.append(item.name) # ADD File name
+                   newContents = line.rsplit(' ', -1) # FORMAT SO HAS INDEXES
+                   package.append(newContents[0]) # GRAB Sign Num
+                   package.append(newContents[5]) # GRAB Conf
+                   write_contents(package) # WRITE THE GOODS
+                   package = [] # RESET package FOR NEXT line
 
-    except:
-        print('ERROR - openFile')
-
-    return newContents
+            else: # IF ONLY ONE BOUNDING BOX
+                package.append(item.name) # ADD File name
+                contentsLinesString = contentsLines[0] # CONVERT List INTO A String
+                newContents = contentsLinesString.rsplit(' ', -1) # FORMAT SO HAS INDEXES
+                package.append(newContents[0]) # GRAB Sign Num
+                package.append(newContents[5]) # GRAB Conf
+                write_contents(package) # WRITE THE GOODS
 
 # WRITE Label Class AND Conf TO combined-data.txt
-def write_contents(newContents):
-    try:
-        # CHECK IF Label FILE IS EMPTY AND HAS conf
-        #if newContents and len(newContents) == 5: # USE ONLY FOR TESTING FILES W/O Conf
-        if newContents and len(newContents) == 6: 
-            sign = convert_sign_num(int(newContents[0]))
+def write_contents(package): # package = [File name, Sign, Conf]
 
-            # WAIT FOR sign TO Return - MAYBE SUPERFLUOUS
-            if sign:
-                with open('combined-data.txt', 'a') as file:
-                    file.write(sign)
-                    file.write(',')
-                    file.write(newContents[4])
-                    file.write(',') # THIS WILL LEAVE A TRAILING ',' AT THE END OF THE FILE
+    try:
+        # CHECK IF FILE HAS BOUNDING BOX INFORMATION
+        if len(package) == 3:
+            sign = convert_sign_num(int(package[1]))
+
+            with open('combined-data.txt', 'a') as file:
+                file.write(package[0]) # WRITE File name 
+                file.write(',')
+                file.write(sign) # WRITE Sign
+                file.write(',')
+                file.write(package[2]) # WRITE Conf
+                file.write(',') # THIS WILL LEAVE A TRAILING ',' AT THE END OF THE FILE
 
         # FILL WITH EMPTY COMMAS IF Label FILE IS EMPTY
         else:
             with open('combined-data.txt', 'a') as file:
-                file.write('')
+                file.write(package[0]) # WRITE File name
                 file.write(',')
-                file.write('')
+                file.write('') # Sign PLACEHOLDER
+                file.write(',')
+                file.write('') # Conf PLACEHOLDER
                 file.write(',') # THIS WILL LEAVE A TRAILING ',' AT THE END OF THE FILE
 
     except:
         print('ERROR - write_contents')
-        print('THIS -> ', newContents)
+        print('THIS -> ', package)
 
 # CONVERTS Sign Number INTO READABLE Sign Name
-def convert_sign_num(newContents):
+def convert_sign_num(package):
     sign = ''
     try:
-        match newContents:
+        match package:
             case 0:
                 sign = 'Chevron Left'
             case 1:
