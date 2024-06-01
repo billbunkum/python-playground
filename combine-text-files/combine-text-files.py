@@ -11,10 +11,8 @@ def main():
 
     # PROMPT USER FOR DIRECTORY
     try:
-        userInput = r'C:\Users\Will\Development\python-playground\combine-text-files\test-dir'
-        #userInput = input(r'Type the directory path: ')
-        #userInput = input('Type the directory path: ')
-        #userInput = userInput.replace('\\', '\\\\')
+        userInput = input(r'Type the directory path: ')
+        userInput = userInput.replace('\\', '\\\\')
         testDir = Path(userInput)
         
     except:
